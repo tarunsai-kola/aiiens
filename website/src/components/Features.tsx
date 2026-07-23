@@ -22,8 +22,7 @@ const Features = () => {
       <div className="container mx-auto px-6 md:px-12 max-w-7xl">
         <div className="mb-16 md:text-center max-w-3xl mx-auto">
           <h2 className="text-3xl md:text-5xl font-bold text-slate-900 tracking-tight mb-6">
-            Everything you need. <br className="hidden md:block" />
-            Nothing you don't.
+            Everything you need to run a modern, efficient, and patient-centric healthcare organization, all in one integrated platform.
           </h2>
           <p className="text-lg text-slate-600">
             A comprehensive suite of features built specifically for the needs of modern clinics and healthcare professionals.

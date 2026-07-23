@@ -11,14 +11,14 @@ const Introduction = () => {
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.8 }}
         >
-          <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-8 tracking-tight">
-            Healthcare has changed. <br className="hidden md:block" />
-            <span className="text-slate-400 font-medium">Patients expect more.</span>
+          <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-8 leading-tight">
+            Large hospital networks offer this modern experience.
+            <span className="text-primary-600"> Independent clinics deserve the same technology.</span>
           </h2>
           
           <div className="text-lg md:text-2xl text-slate-600 leading-relaxed space-y-6 font-medium">
-            <p>
-              Today's patients expect online booking, digital prescriptions, queue tracking, and instant access to their health records.
+            <p className="text-xl text-slate-600 mb-8 leading-relaxed">
+              Today's patients expect online booking, digital prescriptions, live waiting queue updates, and instant access to their medical records.
             </p>
             <p>
               Large hospital networks provide this modern experience. <span className="text-slate-900 font-bold">Independent clinics deserve the same technology.</span>
@@ -31,7 +31,7 @@ const Introduction = () => {
 
         {/* Expectations Grid */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-16">
-          {['Online Booking', 'Digital Rx', 'Queue Tracking', 'Health Records', 'AI Assistance'].map((item, i) => (
+          {['Online Booking', 'Digital Rx', 'Live Queue Updates', 'Medical Records', 'AI Assistance'].map((item, i) => (
             <motion.div
               key={item}
               initial={{ opacity: 0, y: 20 }}

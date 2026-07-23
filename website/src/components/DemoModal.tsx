@@ -8,6 +8,7 @@ const APPS_SCRIPT_URL =
 
 interface DemoModalProps {
   isOpen: boolean;
+  mode?: 'none' | 'demo' | 'brochure';
   onClose: () => void;
 }
 
@@ -40,7 +41,7 @@ const inputCls =
 
 const labelCls = 'block text-sm font-semibold text-slate-700 mb-1.5';
 
-const DemoModal: React.FC<DemoModalProps> = ({ isOpen, onClose }) => {
+const DemoModal: React.FC<DemoModalProps> = ({ isOpen, mode = 'demo', onClose }) => {
   const [form, setForm] = useState<FormState>(INITIAL_FORM);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -88,14 +89,20 @@ const DemoModal: React.FC<DemoModalProps> = ({ isOpen, onClose }) => {
         state: form.state,
       });
 
-      const res = await fetch(`${APPS_SCRIPT_URL}?${params.toString()}`, {
+      const response = await fetch(`${APPS_SCRIPT_URL}?${params.toString()}`, {
         method: 'GET',
-        mode: 'no-cors', // Apps Script returns opaque response — that's fine
+        mode: 'no-cors',
       });
 
-      // With no-cors the response is opaque (type === 'opaque'), status is 0.
-      // As long as no exception is thrown the script executed successfully.
       setIsSuccess(true);
+      if (mode === 'brochure') {
+        const link = document.createElement('a');
+        link.href = '/aiiens health broucher.pdf';
+        link.download = 'AIIENS_Health_Brochure.pdf';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
     } catch (err) {
       console.error(err);
       setError('Something went wrong. Please try again or contact us directly.');
@@ -130,11 +137,13 @@ const DemoModal: React.FC<DemoModalProps> = ({ isOpen, onClose }) => {
               <div className="flex items-start justify-between px-7 py-6 border-b border-slate-100 shrink-0">
                 <div>
                   <h3 className="text-2xl font-bold text-slate-900 tracking-tight">
-                    Book a Free Demo
+                    {mode === 'brochure' ? 'Download Brochure' : 'Book a Free Demo'}
                   </h3>
                   {!isSuccess && (
                     <p className="text-slate-500 text-sm mt-1">
-                      Fill in your details — our team will reach out within 24 hours.
+                      {mode === 'brochure'
+                        ? 'Fill out this form to receive our detailed product brochure.'
+                        : 'Fill in your details — our team will reach out within 24 hours.'}
                     </p>
                   )}
                 </div>
@@ -164,10 +173,12 @@ const DemoModal: React.FC<DemoModalProps> = ({ isOpen, onClose }) => {
                       <CheckCircle className="text-emerald-500 w-20 h-20 mb-5" strokeWidth={1.5} />
                     </motion.div>
                     <h4 className="text-2xl font-bold text-slate-900 mb-2">
-                      Request Received! 🎉
+                      {mode === 'brochure' ? 'Download Started!' : 'Request Received! 🎉'}
                     </h4>
                     <p className="text-slate-500 max-w-sm mx-auto leading-relaxed">
-                      Thank you for your interest in AIIENS Health. Our team will review your details and contact you shortly to schedule your demo.
+                      {mode === 'brochure'
+                        ? 'Your brochure download should start automatically. Thank you for your interest in AIIENS Health.'
+                        : 'Thank you for your interest in AIIENS Health. Our team will review your details and contact you shortly to schedule your demo.'}
                     </p>
                     <button
                       onClick={onClose}
@@ -344,8 +355,10 @@ const DemoModal: React.FC<DemoModalProps> = ({ isOpen, onClose }) => {
                         {isSubmitting ? (
                           <>
                             <Loader2 size={18} className="animate-spin" />
-                            Submitting…
+                            Processing...
                           </>
+                        ) : mode === 'brochure' ? (
+                          'Download Now'
                         ) : (
                           'Submit Request →'
                         )}

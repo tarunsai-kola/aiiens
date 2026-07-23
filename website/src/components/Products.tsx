@@ -20,7 +20,7 @@ const products = [
     icon: <Smartphone className="text-cyan-500" size={32} />,
     title: 'Patient App',
     description: 'Give your patients a premium digital experience. Allow them to book, track queues, and access records directly from their smartphones.',
-    features: ['Book appointments', 'Queue tracking', 'Medical records', 'Digital prescriptions', 'Health timeline'],
+    features: ['Book appointments', 'Live queue updates', 'Medical records', 'Digital prescriptions', 'Health timeline'],
     color: 'bg-cyan-50 border-cyan-100',
     image: patientBg,
   },
@@ -43,7 +43,7 @@ const products = [
   {
     icon: <BrainCircuit className="text-purple-500" size={32} />,
     title: 'AI Platform',
-    description: 'Enterprise-grade AI models trained for healthcare. Benefit from clinical AI, patient insights, and intelligent decision support.',
+    description: 'Enterprise-grade AI models designed for healthcare workflows. Benefit from clinical AI, patient insights, and intelligent decision support.',
     features: ['Clinical AI', 'Patient AI', 'Health recommendations', 'Documentation', 'Decision support'],
     color: 'bg-purple-50 border-purple-100',
     wide: true,

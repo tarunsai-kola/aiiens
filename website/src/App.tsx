@@ -11,22 +11,22 @@ import Footer from './components/Footer';
 import DemoModal from './components/DemoModal';
 
 function App() {
-  const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<'none' | 'demo' | 'brochure'>('none');
 
   return (
     <div className="min-h-screen bg-slate-50 selection:bg-primary-500 selection:text-white">
-      <Navbar onOpenDemo={() => setIsDemoModalOpen(true)} />
+      <Navbar onOpenDemo={() => setModalMode('demo')} />
       <main>
-        <Hero onOpenDemo={() => setIsDemoModalOpen(true)} />
+        <Hero onOpenDemo={() => setModalMode('demo')} onOpenBrochure={() => setModalMode('brochure')} />
         <Introduction />
         <Products />
         <Features />
         <Transformation />
         <AISection />
-        <CTAContact onOpenDemo={() => setIsDemoModalOpen(true)} />
+        <CTAContact onOpenDemo={() => setModalMode('demo')} />
       </main>
       <Footer />
-      <DemoModal isOpen={isDemoModalOpen} onClose={() => setIsDemoModalOpen(false)} />
+      <DemoModal isOpen={modalMode !== 'none'} mode={modalMode} onClose={() => setModalMode('none')} />
     </div>
   );
 }

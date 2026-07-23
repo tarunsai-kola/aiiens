@@ -9,8 +9,8 @@ const CTAContact = ({ onOpenDemo }: { onOpenDemo?: () => void }) => {
           <h2 className="text-3xl md:text-5xl font-bold mb-6 tracking-tight">
             Ready to upgrade your clinic?
           </h2>
-          <p className="text-xl text-slate-400 mb-10 max-w-2xl mx-auto">
-            Join hundreds of healthcare organizations that are delivering world-class digital experiences with AIIENS Health.
+          <p className="text-lg md:text-xl text-slate-400 mb-10 max-w-2xl mx-auto">
+            Join hundreds of healthcare organizations that use AIIENS Health to deliver world-class digital experiences.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

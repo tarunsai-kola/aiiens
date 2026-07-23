@@ -21,7 +21,7 @@ const AISection = () => {
             </div>
             
             <h2 className="text-4xl md:text-5xl font-bold text-slate-900 tracking-tight mb-6 leading-tight">
-              AI Built specifically <br />
+              AI built specifically <br />
               for Healthcare.
             </h2>
             
@@ -56,8 +56,8 @@ const AISection = () => {
                   <ShieldCheck size={24} />
                 </div>
                 <div>
-                  <h4 className="text-xl font-bold text-slate-900 mb-2">Private & Secure</h4>
-                  <p className="text-slate-600">Zero data retention by base models. All AI operations run securely within your clinic's compliant boundaries.</p>
+                  <h4 className="font-semibold text-slate-900 mb-1">Secure by Design</h4>
+                  <p className="text-sm text-slate-600 leading-relaxed">All AI operations run securely within your clinic’s compliant environment, with no customer data retained by base models.</p>
                 </div>
               </div>
             </div>

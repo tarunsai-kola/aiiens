@@ -14,7 +14,7 @@ const Transformation = () => {
             The Digital Transformation
           </h2>
           <p className="text-xl text-slate-400">
-            Traditional Clinic to a Modern Digital Experience
+            From traditional clinics to a modern digital experience.
           </p>
         </div>
 
@@ -66,7 +66,7 @@ const Transformation = () => {
               <div className="md:w-2/3 grid grid-cols-2 gap-4 text-primary-100 font-medium">
                 <div className="flex items-center gap-2">✓ Online 24/7 Booking</div>
                 <div className="flex items-center gap-2">✓ Digital Prescriptions</div>
-                <div className="flex items-center gap-2">✓ Live Queue Tracking</div>
+                <div className="flex items-center gap-2">✓ Live Queue Updates</div>
                 <div className="flex items-center gap-2">✓ Automated Reminders</div>
                 <div className="flex items-center gap-2">✓ Centralized EMR</div>
                 <div className="flex items-center gap-2">✓ Dedicated Patient App</div>

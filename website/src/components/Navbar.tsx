@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Activity } from 'lucide-react';
+import { Menu, X, Stethoscope } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Navbar = ({ onOpenDemo }: { onOpenDemo?: () => void }) => {
@@ -21,8 +21,18 @@ const Navbar = ({ onOpenDemo }: { onOpenDemo?: () => void }) => {
       }`}
     >
       <div className="container mx-auto px-6 md:px-12 flex justify-between items-center max-w-7xl">
-        <div className="flex items-center gap-2">
-          <img src="/logo.png" alt="AIIENS Health Logo" className="h-10 w-auto" />
+        <div className="flex items-center gap-3 select-none">
+          <div className="relative flex items-center justify-center bg-slate-900 text-white w-12 h-12 rounded-xl shadow-sm shrink-0">
+            <Stethoscope size={26} strokeWidth={2} />
+          </div>
+          <div className="flex flex-col justify-center">
+            <span className="text-[1.05rem] font-black text-slate-800 leading-[1.15] tracking-wide">
+              AIIENS HEALTH CARE<br />SYSTEMS
+            </span>
+            <span className="text-[0.75rem] font-medium text-slate-400 mt-0.5 tracking-wide">
+              POWERED BY AIIENS
+            </span>
+          </div>
         </div>
 
         {/* Desktop Nav */}
@@ -35,7 +45,7 @@ const Navbar = ({ onOpenDemo }: { onOpenDemo?: () => void }) => {
 
         <div className="hidden md:flex items-center gap-4">
           <button onClick={onOpenDemo} className="bg-slate-900 text-white px-5 py-2.5 rounded-full font-medium hover:bg-primary-600 transition-colors shadow-lg shadow-slate-900/20 block text-center">
-            Book Demo
+            Book a Demo
           </button>
         </div>
 
@@ -63,7 +73,7 @@ const Navbar = ({ onOpenDemo }: { onOpenDemo?: () => void }) => {
             <a href="#company" className="text-lg font-medium text-slate-700">Company</a>
             <div className="h-px bg-slate-200 my-2" />
             <button onClick={() => { onOpenDemo?.(); setMobileMenuOpen(false); }} className="w-full bg-slate-900 text-white px-5 py-3 rounded-xl font-medium mt-2 block text-center">
-              Book Demo
+              Book a Demo
             </button>
           </motion.div>
         )}
