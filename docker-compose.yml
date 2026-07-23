@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: aiiens_backend
+    restart: always
+    env_file:
+      - ./backend/.env
+    # We do NOT expose 5000 to the outside world directly in production.
+    # The frontend NGINX container will reverse proxy to it.
+    expose:
+      - "5000"
+    networks:
+      - aiiens_network
+
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: aiiens_frontend
+    restart: always
+    ports:
+      - "80:80"
+      # - "443:443" # Uncomment when SSL is configured on the host/proxy
+    depends_on:
+      - api
+    networks:
+      - aiiens_network
+
+networks:
+  aiiens_network:
+    driver: bridge
