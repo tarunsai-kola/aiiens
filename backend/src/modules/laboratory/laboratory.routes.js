@@ -9,7 +9,7 @@ router.use(authenticate);
 
 // --- Test Masters (Blueprints) ---
 router.post('/tests',
-  authorize('laboratory:write'), // Admin / Pathologist
+  authorize('laboratory:create'), // Admin / Pathologist
   asyncHandler(labController.createTestMaster.bind(labController))
 );
 
@@ -20,7 +20,7 @@ router.get('/tests',
 
 // --- Lab Orders (Patient instances) ---
 router.post('/orders',
-  authorize('laboratory:write'), // Doctors, Receptionists
+  authorize('laboratory:create'), // Doctors, Receptionists
   asyncHandler(labController.createLabOrder.bind(labController))
 );
 
@@ -37,19 +37,19 @@ router.get('/orders/:id',
 // --- Workflow Actions ---
 // 1. Phlebotomist collects sample
 router.put('/orders/:id/collect',
-  authorize('laboratory:write'),
+  authorize('laboratory:update'),
   asyncHandler(labController.collectSample.bind(labController))
 );
 
 // 2. Technician uploads results
 router.put('/orders/:id/results',
-  authorize('laboratory:write'),
+  authorize('laboratory:upload_results'),
   asyncHandler(labController.uploadResults.bind(labController))
 );
 
 // 3. Pathologist/Doctor verifies report
 router.put('/orders/:id/verify',
-  authorize('laboratory:write'), // Should ideally be a stricter permission like 'laboratory:verify'
+  authorize('laboratory:update'), // Verifying is an update operation
   asyncHandler(labController.verifyReport.bind(labController))
 );
 

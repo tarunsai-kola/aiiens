@@ -6,6 +6,16 @@ const ApiError = require('../../utils/ApiError');
 const socketUtils = require('../../utils/socket');
 
 class AppointmentService {
+  // ── List (paginated, filterable) ────────────────────────────────────────────
+  async getAllAppointments(hospitalId, queryParams) {
+    return appointmentRepository.findAll(hospitalId, queryParams);
+  }
+
+  // ── Today's Stats ────────────────────────────────────────────────────────────
+  async getTodayStats(hospitalId) {
+    return appointmentRepository.getTodayStats(hospitalId);
+  }
+
   async generateToken(data, hospitalId) {
     const today = new Date();
     

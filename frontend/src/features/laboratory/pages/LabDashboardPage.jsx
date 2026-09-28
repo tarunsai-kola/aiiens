@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { laboratoryApi } from '../../../api/laboratory.api';
 import { patientApi } from '../../../api/patient.api';
 import LabReportPrint from './LabReportPrint';
@@ -143,9 +144,14 @@ export default function LabDashboardPage() {
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Laboratory Workflow</h1>
           <p className="text-gray-500">LIMS Dashboard</p>
         </div>
-        <button onClick={handleOpenOrderModal} className="btn-primary">
-          + Order Test
-        </button>
+        <div className="flex gap-2">
+          <Link to="/laboratory/tests" className="btn-secondary font-bold text-blue-600 border-blue-200 hover:bg-blue-50">
+            ⚙️ Manage Tests
+          </Link>
+          <button onClick={handleOpenOrderModal} className="btn-primary">
+            + Order Test
+          </button>
+        </div>
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">

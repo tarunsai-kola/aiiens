@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { laboratoryApi } from '../../../api/laboratory.api';
 import toast from 'react-hot-toast';
 
@@ -69,9 +70,14 @@ export default function LabTestMasterPage() {
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Lab Test Master Catalog</h1>
           <p className="text-gray-500">Define tests, parameters, and reference ranges</p>
         </div>
-        <button onClick={() => setShowAddModal(true)} className="btn-primary">
-          + Define New Test
-        </button>
+        <div className="flex gap-2">
+          <Link to="/laboratory/billing" className="btn-secondary font-bold">
+            ← Go to Dashboard
+          </Link>
+          <button onClick={() => setShowAddModal(true)} className="btn-primary">
+            + Define New Test
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

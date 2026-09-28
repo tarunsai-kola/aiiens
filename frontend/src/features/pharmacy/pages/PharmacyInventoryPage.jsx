@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { pharmacyApi } from '../../../api/pharmacy.api';
 import toast from 'react-hot-toast';
 
@@ -59,9 +60,14 @@ export default function PharmacyInventoryPage() {
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Pharmacy Inventory</h1>
           <p className="text-gray-500">Stock Management & Master List</p>
         </div>
-        <button onClick={() => setShowAddModal(true)} className="btn-primary">
-          + Add New Item
-        </button>
+        <div className="flex gap-2">
+          <Link to="/pharmacy/billing" className="btn-secondary font-bold">
+            ← Go to POS
+          </Link>
+          <button onClick={() => setShowAddModal(true)} className="btn-primary">
+            + Add New Item
+          </button>
+        </div>
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">

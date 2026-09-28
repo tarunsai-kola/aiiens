@@ -32,13 +32,22 @@ export default function LoginPage() {
     if (Object.keys(errs).length) { setErrors(errs); return; }
 
     try {
-      await login({
+      const payload = await login({
         email:      form.email.trim().toLowerCase(),
         password:   form.password,
         hospitalId: form.hospitalId.trim(),
       });
       toast.success('Welcome back!');
-      navigate('/dashboard', { replace: true });
+      
+      const role = payload.user.role;
+      let targetPath = '/dashboard';
+      if (role === 'pharmacist') targetPath = '/pharmacy/billing';
+      else if (role === 'lab_technician') targetPath = '/laboratory/billing';
+      else if (role === 'doctor') targetPath = '/doctor/queue';
+      else if (role === 'receptionist') targetPath = '/opdesk/billing';
+      else if (role === 'nurse') targetPath = '/nursing/triage';
+
+      navigate(targetPath, { replace: true });
     } catch (err) {
       const msg = err?.message || 'Login failed. Please try again.';
       toast.error(msg);

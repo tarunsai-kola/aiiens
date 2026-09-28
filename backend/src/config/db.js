@@ -8,6 +8,10 @@ const connectDB = async () => {
     throw new Error('MONGO_URI is not defined in environment variables');
   }
 
+  if (mongoose.connection.readyState >= 1) {
+    return;
+  }
+
   await mongoose.connect(uri, {
     // Connection pool settings for production
     maxPoolSize: 10,

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { pharmacyApi } from '../../../api/pharmacy.api';
 import PharmacyInvoicePrint from './PharmacyInvoicePrint';
 import toast from 'react-hot-toast';
@@ -172,9 +173,14 @@ export default function PharmacyDashboardPage() {
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Pharmacy POS</h1>
           <p className="text-gray-500">Dispensing & Billing</p>
         </div>
-        <div className="bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100 flex items-center gap-3">
-          <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-          <span className="text-sm font-bold text-gray-700">Scanner Ready</span>
+        <div className="flex gap-4 items-center">
+          <Link to="/pharmacy/inventory" className="btn-secondary font-bold text-indigo-600 border-indigo-200 hover:bg-indigo-50">
+            📦 Manage Inventory
+          </Link>
+          <div className="bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100 flex items-center gap-3">
+            <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+            <span className="text-sm font-bold text-gray-700">Scanner Ready</span>
+          </div>
         </div>
       </div>
 

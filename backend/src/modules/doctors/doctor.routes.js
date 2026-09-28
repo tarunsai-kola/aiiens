@@ -31,14 +31,14 @@ router.get('/user/:userId',
 
 // POST /api/v1/doctors
 router.post('/',
-  authorize('doctors:write'),
+  authorize('doctors:create'),
   validate(createDoctorSchema),
   asyncHandler(doctorController.create.bind(doctorController))
 );
 
 // PUT /api/v1/doctors/:id
 router.put('/:id',
-  authorize('doctors:write'),
+  authorize('doctors:update'),
   validate(updateDoctorSchema),
   asyncHandler(doctorController.update.bind(doctorController))
 );

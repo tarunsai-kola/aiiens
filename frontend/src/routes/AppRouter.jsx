@@ -143,20 +143,22 @@ function AppRouter() {
 
             {/* Billing — admin, receptionist */}
             <Route element={<RoleRoute roles={['admin', 'receptionist']} />}>
+              <Route path="/billing" element={<Navigate to="/billing/dashboard" replace />} />
               <Route path="/billing/dashboard" element={<BillingDashboardPage />} />
               <Route path="/billing/pos" element={<BillCreatePage />} />
             </Route>
 
             {/* Pharmacy — admin, pharmacist */}
             <Route element={<RoleRoute roles={['admin', 'pharmacist']} />}>
-              <Route path="/pharmacy" element={<PharmacyPage />} />
-              <Route path="/pharmacy/dashboard" element={<PharmacyDashboardPage />} />
+              <Route path="/pharmacy" element={<Navigate to="/pharmacy/billing" replace />} />
+              <Route path="/pharmacy/billing" element={<PharmacyDashboardPage />} />
               <Route path="/pharmacy/inventory" element={<PharmacyInventoryPage />} />
             </Route>
 
             {/* Laboratory — admin, lab_technician, doctor */}
             <Route element={<RoleRoute roles={['admin', 'lab_technician', 'doctor']} />}>
-              <Route path="/laboratory/dashboard" element={<LabDashboardPage />} />
+              <Route path="/laboratory" element={<Navigate to="/laboratory/billing" replace />} />
+              <Route path="/laboratory/billing" element={<LabDashboardPage />} />
               <Route path="/laboratory/tests" element={<LabTestMasterPage />} />
             </Route>
 

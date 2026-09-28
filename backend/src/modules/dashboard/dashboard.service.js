@@ -21,15 +21,24 @@ class DashboardService {
     ] = await Promise.all([
       // 1. Today's Revenue
       (Payment?.aggregate([
-        { $match: { hospitalId, paymentDate: { $gte: today }, status: 'Completed' } },
-        { $group: { _id: null, total: { $sum: '$amount' } } }
+        { $match: { hospitalId, createdAt: { $gte: today } } },
+        { 
+          $group: { 
+            _id: null, 
+            total: { 
+              $sum: {
+                $cond: [{ $eq: ['$type', 'payment'] }, '$amount', { $multiply: ['$amount', -1] }]
+              }
+            } 
+          } 
+        }
       ]) || Promise.resolve([])),
 
       // 2. Today's Patients
       (Patient?.countDocuments({ hospitalId, createdAt: { $gte: today } }) || Promise.resolve(0)),
 
       // 3. Today's Appointments
-      (Appointment?.countDocuments({ hospitalId, appointmentDate: { $gte: today } }) || Promise.resolve(0)),
+      (Appointment?.countDocuments({ hospitalId, date: { $gte: today } }) || Promise.resolve(0)),
 
       // 4. Occupancy (Mocked since Ward/Bed models are not fully implemented yet)
       Promise.resolve([
@@ -107,21 +116,25 @@ class DashboardService {
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
     
     const appointmentsTrend = (await Appointment?.aggregate([
-      { $match: { hospitalId, createdAt: { $gte: sevenDaysAgo } } },
+      { $match: { hospitalId, date: { $gte: sevenDaysAgo } } },
       { 
         $group: { 
-          _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } }, 
+          _id: { $dateToString: { format: '%Y-%m-%d', date: '$date' } }, 
           count: { $sum: 1 } 
         } 
       }
     ])) || [];
 
     const revenueTrend = (await Payment?.aggregate([
-      { $match: { hospitalId, paymentDate: { $gte: sevenDaysAgo }, status: 'Completed' } },
+      { $match: { hospitalId, createdAt: { $gte: sevenDaysAgo } } },
       { 
         $group: { 
-          _id: { $dateToString: { format: '%Y-%m-%d', date: '$paymentDate' } }, 
-          total: { $sum: '$amount' } 
+          _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } }, 
+          total: { 
+            $sum: {
+              $cond: [{ $eq: ['$type', 'payment'] }, '$amount', { $multiply: ['$amount', -1] }]
+            }
+          } 
         } 
       }
     ])) || [];

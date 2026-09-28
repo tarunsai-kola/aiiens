@@ -15,7 +15,7 @@ router.get('/reports/collection',
 
 // Bills
 router.post('/',
-  authorize('billing:write'),
+  authorize('billing:create'),
   asyncHandler(billingController.createBill.bind(billingController))
 );
 
@@ -31,7 +31,7 @@ router.get('/:id',
 
 // Payments
 router.post('/:id/payments',
-  authorize('billing:write'),
+  authorize('billing:create'),
   asyncHandler(billingController.addPayment.bind(billingController))
 );
 

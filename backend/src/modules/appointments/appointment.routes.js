@@ -8,26 +8,39 @@ const asyncHandler = require('../../middlewares/asyncHandler');
 // All routes require authentication
 router.use(authenticate);
 
+// GET /api/v1/appointments — Paginated list (admin/manager)
+router.get('/',
+  authorize('appointments:read'),
+  asyncHandler(appointmentController.getAll.bind(appointmentController))
+);
+
+// GET /api/v1/appointments/stats — Today's stats
+router.get('/stats',
+  authorize('appointments:read'),
+  asyncHandler(appointmentController.getStats.bind(appointmentController))
+);
+
 // Generate a Token (Receptionist, Admin)
 router.post('/token',
-  authorize('appointments:write'), // Or specific OP desk permission
+  authorize('appointments:create'),
   asyncHandler(appointmentController.generateToken.bind(appointmentController))
 );
 
-// Get Doctor Queue
+// Get Doctor Queue (all roles with appointments:read can view)
 router.get('/queue',
-  // authorize('appointments:read'), 
+  authorize('appointments:read'),
   asyncHandler(appointmentController.getDoctorQueue.bind(appointmentController))
 );
 
 // Update Status (Call Next, Complete, Hold)
 router.patch('/:id/status',
-  // authorize('appointments:write'), 
+  authorize('appointments:update'),
   asyncHandler(appointmentController.updateStatus.bind(appointmentController))
 );
 
 // Transfer Patient
 router.post('/:id/transfer',
+  authorize('appointments:update'),
   asyncHandler(appointmentController.transfer.bind(appointmentController))
 );
 

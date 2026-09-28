@@ -9,7 +9,7 @@ router.use(authenticate);
 
 // Inventory
 router.post('/inventory',
-  authorize('pharmacy:write'),
+  authorize('pharmacy:create'),
   asyncHandler(pharmacyController.addInventory.bind(pharmacyController))
 );
 
@@ -31,7 +31,7 @@ router.get('/queue',
 
 // Dispense & Billing
 router.post('/dispense',
-  authorize('pharmacy:write'),
+  authorize('pharmacy:dispense'),
   asyncHandler(pharmacyController.dispense.bind(pharmacyController))
 );
 

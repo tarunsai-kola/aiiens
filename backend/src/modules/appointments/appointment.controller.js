@@ -2,6 +2,16 @@ const appointmentService = require('./appointment.service');
 const ApiResponse = require('../../utils/ApiResponse');
 
 class AppointmentController {
+  async getAll(req, res) {
+    const result = await appointmentService.getAllAppointments(req.user.hospitalId, req.query);
+    res.status(200).json(ApiResponse.success('Appointments retrieved', result));
+  }
+
+  async getStats(req, res) {
+    const stats = await appointmentService.getTodayStats(req.user.hospitalId);
+    res.status(200).json(ApiResponse.success('Stats retrieved', stats));
+  }
+
   async generateToken(req, res) {
     const appointment = await appointmentService.generateToken(req.body, req.user.hospitalId);
     res.status(201).json(ApiResponse.success('Token generated successfully', appointment));
