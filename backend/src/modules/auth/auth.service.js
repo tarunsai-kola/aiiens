@@ -1,4 +1,5 @@
 const authRepository          = require('./auth.repository');
+const { Hospital }            = require('../../models/Hospital.model');
 const { comparePassword }     = require('../../utils/hashPassword');
 const { generateAccessToken, generateRefreshToken } = require('../../utils/generateToken');
 const { generateSecureToken, hashToken } = require('../../utils/cryptoToken');
@@ -18,7 +19,16 @@ const VERIFY_TOKEN_TTL_MS = 24 * 60 * 60 * 1000;  // 24 hours
 class AuthService {
   // ── 1. Login ────────────────────────────────────────────────────────────────
   async login(email, password, hospitalId, ip) {
-    const user = await authRepository.findByEmail(email, hospitalId);
+    // Resolve hospitalId: accept ObjectId OR hospital slug
+    const isObjectId = /^[0-9a-fA-F]{24}$/.test(hospitalId);
+    let resolvedHospitalId = hospitalId;
+    if (!isObjectId) {
+      const hospital = await Hospital.findOne({ slug: hospitalId }).select('_id').lean();
+      if (!hospital) throw ApiError.unauthorized('Hospital not found. Check your Hospital ID.');
+      resolvedHospitalId = hospital._id.toString();
+    }
+
+    const user = await authRepository.findByEmail(email, resolvedHospitalId);
 
     if (!user) {
       // Generic message to prevent email enumeration
@@ -43,10 +53,10 @@ class AuthService {
     const isMatch = await comparePassword(password, user.password);
 
     if (!isMatch) {
-      const updated = await authRepository.incrementLoginAttempts(user._id, hospitalId);
+      const updated = await authRepository.incrementLoginAttempts(user._id, resolvedHospitalId);
       if (updated && updated.loginAttempts >= MAX_LOGIN_ATTEMPTS) {
         await authRepository.lockAccount(
-          user._id, hospitalId,
+          user._id, resolvedHospitalId,
           new Date(Date.now() + LOCK_DURATION_MS)
         );
         throw ApiError.forbidden('Too many failed attempts. Account locked for 15 minutes.');
@@ -56,12 +66,12 @@ class AuthService {
 
     // Success — reset lockout
     await Promise.all([
-      authRepository.resetLoginAttempts(user._id, hospitalId),
-      authRepository.updateLastLogin(user._id, hospitalId, ip),
+      authRepository.resetLoginAttempts(user._id, resolvedHospitalId),
+      authRepository.updateLastLogin(user._id, resolvedHospitalId, ip),
     ]);
 
-    const tokens = this._generateTokens(user, hospitalId);
-    await authRepository.updateRefreshToken(user._id, hospitalId, tokens.refreshToken);
+    const tokens = this._generateTokens(user, resolvedHospitalId);
+    await authRepository.updateRefreshToken(user._id, resolvedHospitalId, tokens.refreshToken);
 
     return { user, ...tokens };
   }

@@ -61,9 +61,11 @@ const registerHospitalSchema = Joi.object({
 const loginSchema = Joi.object({
   email:      email,
   password:   Joi.string().required().messages({ 'any.required': 'Password is required' }),
-  hospitalId: objectId.required().messages({ 'any.required': 'Hospital ID is required' }),
-  // Note: hospitalId is also extracted from subdomain/header in production
-  // For simplicity in this implementation it's passed in body
+  // Accept either a MongoDB ObjectId OR a hospital slug (e.g. "my-hospital")
+  hospitalId: Joi.string().min(1).required().messages({
+    'any.required': 'Hospital ID is required',
+    'string.min':   'Hospital ID is required',
+  }),
 });
 
 // ── 3. Refresh Token ──────────────────────────────────────────────────────────
