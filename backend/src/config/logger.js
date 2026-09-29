@@ -7,6 +7,26 @@ const logFormat = printf(({ level, message, timestamp: ts, stack }) => {
   return `${ts} [${level}]: ${stack || message}`;
 });
 
+const transports = [
+  // Console transport (always active)
+  new winston.transports.Console({
+    format: combine(colorize(), timestamp({ format: 'HH:mm:ss' }), logFormat),
+  }),
+];
+
+// File transports only when NOT running on Vercel (read-only filesystem)
+if (!process.env.VERCEL) {
+  transports.push(
+    new winston.transports.File({
+      filename: path.join('logs', 'error.log'),
+      level: 'error',
+    }),
+    new winston.transports.File({
+      filename: path.join('logs', 'combined.log'),
+    })
+  );
+}
+
 const logger = winston.createLogger({
   level: process.env.NODE_ENV === 'production' ? 'warn' : 'debug',
   format: combine(
@@ -14,21 +34,7 @@ const logger = winston.createLogger({
     errors({ stack: true }),
     logFormat
   ),
-  transports: [
-    // Console transport (dev-friendly with colors)
-    new winston.transports.Console({
-      format: combine(colorize(), timestamp({ format: 'HH:mm:ss' }), logFormat),
-    }),
-    // Error log file
-    new winston.transports.File({
-      filename: path.join('logs', 'error.log'),
-      level: 'error',
-    }),
-    // Combined log file
-    new winston.transports.File({
-      filename: path.join('logs', 'combined.log'),
-    }),
-  ],
+  transports,
   exitOnError: false,
 });
 
