@@ -46,6 +46,7 @@ function reducer(state, { type, payload }) {
         refreshToken:    payload.refreshToken,
         hospitalId:      payload.user?.hospitalId || payload.hospitalId || state.hospitalId,
         isAuthenticated: true,
+        isInitialized:   true,   // ← login also marks init done
         isLoading:       false,
         error:           null,
       };
@@ -96,11 +97,19 @@ export function AuthProvider({ children }) {
     if (!payload) return;
     const { user, accessToken, refreshToken } = payload;
     const hospitalId = user?.hospitalId || payload.hospitalId || '';
-    
+
+    // Normalize: flatten roleId.slug → role so LoginPage role-redirect works
+    const normalizedUser = user ? {
+      ...user,
+      role: user.role || user.roleId?.slug || user.roleId?.name || 'admin',
+    } : user;
+
     if (accessToken)  localStorage.setItem(KEYS.accessToken, accessToken);
     if (refreshToken) localStorage.setItem(KEYS.refreshToken, refreshToken);
     if (hospitalId)   localStorage.setItem(KEYS.hospitalId, hospitalId);
-    if (user)         localStorage.setItem(KEYS.user, JSON.stringify(user));
+    if (normalizedUser) localStorage.setItem(KEYS.user, JSON.stringify(normalizedUser));
+
+    return normalizedUser;
   };
 
   const clearAuth = () => {
@@ -117,18 +126,26 @@ export function AuthProvider({ children }) {
       }
       try {
         const res = await authApi.getMe();
-        const user = res.data.data;
+        const rawUser = res.data.data;
+        // Normalize role field
+        const user = {
+          ...rawUser,
+          role: rawUser.role || rawUser.roleId?.slug || rawUser.roleId?.name || 'admin',
+        };
         localStorage.setItem(KEYS.user, JSON.stringify(user));
         dispatch({ type: A.SET_USER, payload: user });
       } catch {
-        // Token invalid — clear silently
-        clearAuth();
-        dispatch({ type: A.LOGOUT });
+        // Token invalid — clear silently (but only if not just logged in)
+        if (!state.isAuthenticated) {
+          clearAuth();
+          dispatch({ type: A.LOGOUT });
+        }
       } finally {
         dispatch({ type: A.INIT_COMPLETE });
       }
     };
     bootstrap();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ── Actions ───────────────────────────────────────────────────────────────
@@ -137,8 +154,9 @@ export function AuthProvider({ children }) {
     dispatch({ type: A.LOADING, payload: true });
     try {
       const res = await authApi.login(credentials);
-      const payload = res.data.data; // { user, accessToken, refreshToken }
-      persistAuth(payload);
+      const raw = res.data.data; // { user, accessToken, refreshToken }
+      const normalizedUser = persistAuth(raw);
+      const payload = { ...raw, user: normalizedUser || raw.user };
       dispatch({ type: A.AUTH_SUCCESS, payload });
       return payload;
     } catch (err) {
