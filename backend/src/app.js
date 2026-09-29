@@ -52,6 +52,16 @@ if (process.env.NODE_ENV === 'development') {
   }));
 }
 
+// ── Root Route ────────────────────────────────────────────────────────────────
+app.get('/', (_req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Aiiens Health API is running',
+    version: '1.0.0',
+    docs: '/api/v1',
+  });
+});
+
 // ── Health Check ──────────────────────────────────────────────────────────────
 app.get('/health', (_req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
