@@ -19,13 +19,13 @@ router.get('/permissions',
 
 // GET /api/v1/roles
 router.get('/',
-  authorize('roles:read'),
+  authorize('roles:read', 'opdesk', 'doctor', 'receptionist'),
   asyncHandler(roleController.getAll.bind(roleController))
 );
 
 // GET /api/v1/roles/:id
 router.get('/:id',
-  authorize('roles:read'),
+  authorize('roles:read', 'opdesk', 'doctor', 'receptionist'),
   asyncHandler(roleController.getOne.bind(roleController))
 );
 

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { appointmentApi } from '../../../api/appointment.api';
 import { adminApi } from '../../../api/admin.api';
+import { vitalsApi } from '../../../api/vitals.api';
 import toast from 'react-hot-toast';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -114,6 +115,16 @@ function StatusActions({ appt, onUpdate }) {
 
 // ── Appointment Detail Panel ──────────────────────────────────────────────────
 function DetailPanel({ appt, onClose, onUpdate }) {
+  const [vitals, setVitals] = useState(null);
+  
+  useEffect(() => {
+    if (appt) {
+      vitalsApi.getVitalsByAppointment(appt._id)
+        .then(res => setVitals(res.data.data))
+        .catch(err => console.error('Failed to load vitals', err));
+    }
+  }, [appt]);
+
   if (!appt) return null;
   const patient = appt.patientId || {};
   const doctor  = appt.doctorId  || {};
@@ -184,6 +195,50 @@ function DetailPanel({ appt, onClose, onUpdate }) {
             <section>
               <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">Notes</h3>
               <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{appt.notes}</p>
+            </section>
+          )}
+
+          {vitals && (
+            <section>
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">Vital Screening</h3>
+              <div className="grid grid-cols-2 gap-4">
+                {vitals.bpSystolic && vitals.bpDiastolic && (
+                  <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
+                    <div className="text-[10px] text-gray-500 uppercase font-bold">Blood Pressure</div>
+                    <div className="font-bold text-gray-900 dark:text-white">{vitals.bpSystolic}/{vitals.bpDiastolic} mmHg</div>
+                  </div>
+                )}
+                {vitals.pulse && (
+                  <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
+                    <div className="text-[10px] text-gray-500 uppercase font-bold">Heart Rate</div>
+                    <div className="font-bold text-gray-900 dark:text-white">{vitals.pulse} BPM</div>
+                  </div>
+                )}
+                {vitals.temperature && (
+                  <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
+                    <div className="text-[10px] text-gray-500 uppercase font-bold">Temperature</div>
+                    <div className="font-bold text-gray-900 dark:text-white">{vitals.temperature}</div>
+                  </div>
+                )}
+                {vitals.spo2 && (
+                  <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
+                    <div className="text-[10px] text-gray-500 uppercase font-bold">SpO2</div>
+                    <div className="font-bold text-gray-900 dark:text-white">{vitals.spo2}%</div>
+                  </div>
+                )}
+                {vitals.weight && (
+                  <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
+                    <div className="text-[10px] text-gray-500 uppercase font-bold">Weight</div>
+                    <div className="font-bold text-gray-900 dark:text-white">{vitals.weight} kg</div>
+                  </div>
+                )}
+                {vitals.height && (
+                  <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
+                    <div className="text-[10px] text-gray-500 uppercase font-bold">Height</div>
+                    <div className="font-bold text-gray-900 dark:text-white">{vitals.height} cm</div>
+                  </div>
+                )}
+              </div>
             </section>
           )}
 

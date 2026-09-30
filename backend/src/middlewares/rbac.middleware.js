@@ -14,8 +14,10 @@ const authorize = (...allowedRolesOrPermissions) => {
       return next(ApiError.unauthorized('Authentication required'));
     }
 
+    console.log(`[RBAC Debug] User role: ${req.user.role}, Allowed: ${allowedRolesOrPermissions}`);
     // 1. Check if the user's role slug matches directly
     if (allowedRolesOrPermissions.includes(req.user.role)) {
+      console.log(`[RBAC Debug] Passed by direct role match`);
       return next();
     }
 
@@ -24,9 +26,11 @@ const authorize = (...allowedRolesOrPermissions) => {
     const hasPermission = allowedRolesOrPermissions.some(p => userPermissions.includes(p));
 
     if (hasPermission) {
+      console.log(`[RBAC Debug] Passed by permission match`);
       return next();
     }
 
+    console.log(`[RBAC Debug] Access denied for ${req.user.role}`);
     return next(
       ApiError.forbidden(
         `Your current role (${req.user.role}) does not have the required permissions to access this resource.`

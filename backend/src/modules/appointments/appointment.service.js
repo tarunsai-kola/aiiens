@@ -1,5 +1,5 @@
 const appointmentRepository = require('./appointment.repository');
-const Patient = require('../patients/patient.model');
+const { Patient } = require('../patients/patient.model');
 const { User } = require('../auth/auth.model');
 const notificationService = require('../notifications/notification.service');
 const ApiError = require('../../utils/ApiError');
@@ -91,7 +91,7 @@ class AppointmentService {
     // Emit global queue update
     io.to(`hospital_${hospitalId}`).emit('queue:updated', {
       action: 'status_changed',
-      doctorId: appointment.doctorId._id,
+      doctorId: appointment.doctorId?._id || appointment.doctorId,
       appointment
     });
 

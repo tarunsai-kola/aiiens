@@ -63,7 +63,7 @@ export default function DoctorQueuePage() {
 
   const fetchQueue = async () => {
     try {
-      const { data } = await appointmentApi.getDoctorQueue(doctorId, null, 'active');
+      const { data } = await appointmentApi.getDoctorQueue({ doctorId, statusFilter: 'active' });
       setQueue(data.data || []);
     } catch (err) {
       toast.error('Failed to load queue');

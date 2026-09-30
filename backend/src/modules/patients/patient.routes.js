@@ -13,32 +13,32 @@ router.use(authenticate);
 
 // GET /api/v1/patients/search?q=...
 router.get('/search',
-  authorize('patients:read'),
+  authorize('patients:read', 'receptionist', 'opdesk'),
   asyncHandler(patientController.search.bind(patientController))
 );
 
 // GET /api/v1/patients
 router.get('/',
-  authorize('patients:read'),
+  authorize('patients:read', 'receptionist', 'opdesk'),
   asyncHandler(patientController.getAll.bind(patientController))
 );
 
 // GET /api/v1/patients/:id
 router.get('/:id',
-  authorize('patients:read'),
+  authorize('patients:read', 'receptionist', 'opdesk'),
   asyncHandler(patientController.getOne.bind(patientController))
 );
 
 // POST /api/v1/patients/register
 router.post('/register',
-  authorize('patients:create'),
+  authorize('patients:create', 'receptionist', 'opdesk'),
   validate(createPatientSchema),
   asyncHandler(patientController.create.bind(patientController))
 );
 
 // PUT /api/v1/patients/:id
 router.put('/:id',
-  authorize('patients:update'),
+  authorize('patients:update', 'receptionist', 'opdesk'),
   validate(updatePatientSchema),
   asyncHandler(patientController.update.bind(patientController))
 );

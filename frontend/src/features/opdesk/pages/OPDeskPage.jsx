@@ -1,15 +1,36 @@
 import { useState, useEffect } from 'react';
 import { Search, Bell, Calendar, Stethoscope, Zap, Users, Box, Clock } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
+import { appointmentApi } from '../../../api/appointment.api';
+import { notificationApi } from '../../../api/notifications.api';
 
 export default function OPDeskPage() {
   const { user } = useAuth();
   const [time, setTime] = useState(new Date());
+  const [stats, setStats] = useState({ total: 0, waiting: 0, emergency: 0, completed: 0 });
+  const [bulletins, setBulletins] = useState([]);
+  const [schedule, setSchedule] = useState([]);
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
+    fetchStats();
     return () => clearInterval(timer);
   }, []);
+
+  const fetchStats = async () => {
+    try {
+      const [statsRes, notifRes, aptRes] = await Promise.all([
+        appointmentApi.getStats(),
+        notificationApi.getMyNotifications(),
+        appointmentApi.getAll({ limit: 4 })
+      ]);
+      setStats(statsRes.data.data || { total: 0, waiting: 0, emergency: 0, completed: 0 });
+      setBulletins(notifRes.data.data || []);
+      setSchedule(aptRes.data.data.docs || []);
+    } catch (err) {
+      console.error('Failed to load dashboard data', err);
+    }
+  };
 
   return (
     <div className="flex flex-col h-full bg-[#f8fafc] dark:bg-gray-950 font-sans">
@@ -67,10 +88,10 @@ export default function OPDeskPage() {
             </p>
             <div className="flex gap-3">
               <span className="px-3 py-1 bg-cyan-50 dark:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400 text-[10px] font-bold tracking-wider rounded-full uppercase border border-cyan-100 dark:border-cyan-800">
-                SHIFT: MORNING
+                ROLE: {user?.role || 'STAFF'}
               </span>
               <span className="px-3 py-1 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold tracking-wider rounded-full uppercase border border-emerald-100 dark:border-emerald-800">
-                DEPT: CARDIOLOGY
+                DEPT: GENERAL
               </span>
             </div>
           </div>
@@ -93,11 +114,11 @@ export default function OPDeskPage() {
         <div className="grid grid-cols-4 gap-6">
           {/* Card 1 */}
           <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 flex flex-col justify-between h-32 hover:shadow-md transition-shadow">
-            <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">TOTAL BED OCCUPANCY</h3>
+            <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">WAITING PATIENTS</h3>
             <div className="flex justify-between items-end">
-              <span className="text-4xl font-bold text-blue-500">82%</span>
-              <span className="text-[10px] font-bold px-2 py-1 bg-green-50 text-green-600 rounded">
-                +4%
+              <span className="text-4xl font-bold text-blue-500">{stats.waiting}</span>
+              <span className="text-[10px] font-bold px-2 py-1 bg-blue-50 text-blue-600 rounded">
+                Queue
               </span>
             </div>
           </div>
@@ -105,7 +126,7 @@ export default function OPDeskPage() {
           <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 flex flex-col justify-between h-32 hover:shadow-md transition-shadow">
             <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">TODAY APPOINTMENTS</h3>
             <div className="flex justify-between items-end">
-              <span className="text-4xl font-bold text-green-500">142</span>
+              <span className="text-4xl font-bold text-green-500">{stats.total}</span>
               <span className="text-[10px] font-bold px-2 py-1 bg-green-50 text-green-600 rounded">
                 Live
               </span>
@@ -115,7 +136,7 @@ export default function OPDeskPage() {
           <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 flex flex-col justify-between h-32 hover:shadow-md transition-shadow">
             <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">ACTIVE EMERGENCIES</h3>
             <div className="flex justify-between items-end">
-              <span className="text-4xl font-bold text-red-500">03</span>
+              <span className="text-4xl font-bold text-red-500">{stats.emergency}</span>
               <span className="text-[10px] font-bold px-2 py-1 bg-red-50 text-red-600 rounded">
                 High
               </span>
@@ -123,11 +144,11 @@ export default function OPDeskPage() {
           </div>
           {/* Card 4 */}
           <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 flex flex-col justify-between h-32 hover:shadow-md transition-shadow">
-            <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">STAFF ON DUTY</h3>
+            <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">COMPLETED TODAY</h3>
             <div className="flex justify-between items-end">
-              <span className="text-4xl font-bold text-blue-500">88/120</span>
+              <span className="text-4xl font-bold text-emerald-500">{stats.completed}</span>
               <span className="text-[10px] font-bold px-2 py-1 bg-emerald-50 text-emerald-600 rounded">
-                Normal
+                Done
               </span>
             </div>
           </div>
@@ -149,47 +170,32 @@ export default function OPDeskPage() {
             </div>
 
             <div className="space-y-8">
-              {/* Item 1 */}
-              <div className="group border-b border-gray-100 dark:border-gray-800 pb-8 last:border-0 last:pb-0">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-[10px] font-bold px-2.5 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-md uppercase tracking-wider">ANNOUNCEMENT</span>
-                  <span className="text-[11px] text-gray-400 font-medium">May 15, 2026</span>
-                </div>
-                <h4 className="text-base font-bold text-gray-900 dark:text-white mb-2 group-hover:text-blue-500 transition-colors cursor-pointer">
-                  New NABH Audit Scheduled
-                </h4>
-                <p className="text-sm text-gray-500 leading-relaxed">
-                  The semi-annual NABH audit is scheduled for next week. Please ensure all documentation is up to date.
-                </p>
-              </div>
-
-              {/* Item 2 */}
-              <div className="group border-b border-gray-100 dark:border-gray-800 pb-8 last:border-0 last:pb-0">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-[10px] font-bold px-2.5 py-1 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-md uppercase tracking-wider">MEDICAL NEWS</span>
-                  <span className="text-[11px] text-gray-400 font-medium">May 14, 2026</span>
-                </div>
-                <h4 className="text-base font-bold text-gray-900 dark:text-white mb-2 group-hover:text-blue-500 transition-colors cursor-pointer">
-                  New Cardio-Unit Protocol
-                </h4>
-                <p className="text-sm text-gray-500 leading-relaxed">
-                  Updated protocols for post-operative cardiac care have been uploaded to the internal portal.
-                </p>
-              </div>
-
-              {/* Item 3 */}
-              <div className="group">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-[10px] font-bold px-2.5 py-1 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-md uppercase tracking-wider">SYSTEM UPDATE</span>
-                  <span className="text-[11px] text-gray-400 font-medium">May 12, 2026</span>
-                </div>
-                <h4 className="text-base font-bold text-gray-900 dark:text-white mb-2 group-hover:text-blue-500 transition-colors cursor-pointer">
-                  AI Triage Model v2.4 Live
-                </h4>
-                <p className="text-sm text-gray-500 leading-relaxed">
-                  The latest AI triage model is now active in the Emergency OPD, offering 15% better risk prediction.
-                </p>
-              </div>
+              {bulletins.length === 0 ? (
+                <div className="text-gray-500 py-10 text-center">No new bulletins</div>
+              ) : (
+                bulletins.map((bulletin) => (
+                  <div key={bulletin._id} className="group border-b border-gray-100 dark:border-gray-800 pb-8 last:border-0 last:pb-0">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className={`text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider ${
+                        bulletin.channel === 'push' ? 'bg-purple-50 dark:bg-purple-900/30 text-purple-600' : 
+                        bulletin.channel === 'sms' ? 'bg-green-50 dark:bg-green-900/30 text-green-600' : 
+                        'bg-blue-50 dark:bg-blue-900/30 text-blue-600'
+                      }`}>
+                        {bulletin.title || 'SYSTEM UPDATE'}
+                      </span>
+                      <span className="text-[11px] text-gray-400 font-medium">
+                        {new Date(bulletin.createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <h4 className="text-base font-bold text-gray-900 dark:text-white mb-2 group-hover:text-blue-500 transition-colors cursor-pointer">
+                      {bulletin.message}
+                    </h4>
+                    <p className="text-sm text-gray-500 leading-relaxed">
+                      {bulletin.metadata?.details || 'Please review the updated protocols in the internal portal.'}
+                    </p>
+                  </div>
+                ))
+              )}
             </div>
           </div>
 
@@ -209,28 +215,31 @@ export default function OPDeskPage() {
               </div>
 
               <div className="space-y-4">
-                {/* Active Task */}
-                <div className="p-5 rounded-2xl border-l-4 border-blue-500 bg-blue-50/50 dark:bg-blue-900/10 relative">
-                  <div className="absolute right-4 top-4 text-[9px] font-bold bg-blue-500 text-white px-2 py-0.5 rounded uppercase tracking-wider">
-                    ACTIVE NOW
-                  </div>
-                  <p className="text-xs font-bold text-blue-500 mb-1">10:00 AM</p>
-                  <h4 className="font-bold text-gray-900 dark:text-white text-sm">Cardiology Round</h4>
-                  <p className="text-xs text-gray-500 mt-1">ICU Unit A</p>
-                </div>
-
-                {/* Upcoming */}
-                <div className="p-5 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 transition-colors">
-                  <p className="text-xs font-bold text-gray-400 mb-1">11:30 AM</p>
-                  <h4 className="font-bold text-gray-900 dark:text-white text-sm">Patient Consultation</h4>
-                  <p className="text-xs text-gray-500 mt-1">OPD Room 204</p>
-                </div>
-
-                {/* Upcoming */}
-                <div className="p-5 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 transition-colors">
-                  <p className="text-xs font-bold text-gray-400 mb-1">01:00 PM</p>
-                  <h4 className="font-bold text-gray-900 dark:text-white text-sm">Department Meeting</h4>
-                </div>
+                {schedule.length === 0 ? (
+                  <div className="text-gray-500 text-center py-6 text-sm">No tasks scheduled</div>
+                ) : (
+                  schedule.map((item, index) => {
+                    const isNext = index === 0 && item.status === 'triage';
+                    return (
+                      <div key={item._id} className={`p-5 rounded-2xl border ${isNext ? 'border-l-4 border-blue-500 bg-blue-50/50 dark:bg-blue-900/10 relative' : 'border-gray-100 dark:border-gray-800 hover:border-gray-200 transition-colors'}`}>
+                        {isNext && (
+                          <div className="absolute right-4 top-4 text-[9px] font-bold bg-blue-500 text-white px-2 py-0.5 rounded uppercase tracking-wider">
+                            UP NEXT
+                          </div>
+                        )}
+                        <p className={`text-xs font-bold mb-1 ${isNext ? 'text-blue-500' : 'text-gray-400'}`}>
+                          {new Date(item.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </p>
+                        <h4 className="font-bold text-gray-900 dark:text-white text-sm">
+                          {item.patientId?.firstName} {item.patientId?.lastName}
+                        </h4>
+                        <p className="text-xs text-gray-500 mt-1">
+                          Token #{item.tokenNumber} • {item.departmentId?.name || 'OPD'}
+                        </p>
+                      </div>
+                    );
+                  })
+                )}
               </div>
             </div>
 

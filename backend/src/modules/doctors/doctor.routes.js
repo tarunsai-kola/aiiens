@@ -13,7 +13,7 @@ router.use(authenticate);
 
 // GET /api/v1/doctors
 router.get('/',
-  authorize('doctors:read'),
+  authorize('doctors:read', 'receptionist', 'opdesk'),
   asyncHandler(doctorController.getAll.bind(doctorController))
 );
 

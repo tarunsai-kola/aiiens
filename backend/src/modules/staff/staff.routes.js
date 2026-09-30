@@ -13,13 +13,13 @@ router.use(authenticate);
 
 // GET /api/v1/staff
 router.get('/',
-  authorize('users:read'),
+  authorize('users:read', 'opdesk', 'doctor', 'receptionist'),
   asyncHandler(staffController.getAll.bind(staffController))
 );
 
 // GET /api/v1/staff/:id
 router.get('/:id',
-  authorize('users:read'),
+  authorize('users:read', 'opdesk', 'doctor', 'receptionist'),
   asyncHandler(staffController.getOne.bind(staffController))
 );
 

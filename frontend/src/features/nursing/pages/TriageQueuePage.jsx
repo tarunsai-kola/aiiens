@@ -52,7 +52,7 @@ export default function TriageQueuePage() {
   const fetchTriageQueue = async () => {
     try {
       setLoading(true);
-      const { data } = await appointmentApi.getDoctorQueue(null, null, 'triage'); 
+      const { data } = await appointmentApi.getDoctorQueue({ statusFilter: 'triage' }); 
       setQueue(data.data || []);
     } catch (err) {
       toast.error('Failed to load triage queue');

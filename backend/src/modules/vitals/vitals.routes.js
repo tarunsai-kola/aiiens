@@ -12,14 +12,14 @@ router.use(authenticate);
 
 // POST /api/v1/vitals
 router.post('/',
-  authorize('vitals:write'), // e.g. nurses, doctors
+  authorize('vitals:write', 'receptionist', 'opdesk'), // e.g. nurses, doctors
   validate(saveVitalsSchema),
   asyncHandler(vitalsController.saveVitals.bind(vitalsController))
 );
 
 // GET /api/v1/vitals/appointment/:appointmentId
 router.get('/appointment/:appointmentId',
-  authorize('vitals:read'),
+  authorize('vitals:read', 'receptionist', 'opdesk'),
   asyncHandler(vitalsController.getVitals.bind(vitalsController))
 );
 

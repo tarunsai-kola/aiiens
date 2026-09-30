@@ -23,7 +23,8 @@ class AppointmentController {
     const docId = doctorId || (req.user.role === 'doctor' ? req.user.id : null);
 
     // If fetching triage queue, docId is optional (global triage view)
-    if (!docId && statusFilter !== 'triage') {
+    // Allow non-doctors to fetch the global queue
+    if (!docId && statusFilter !== 'triage' && req.user.role === 'doctor') {
       return res.status(400).json(ApiResponse.error('Doctor ID is required to fetch specific queue'));
     }
 
